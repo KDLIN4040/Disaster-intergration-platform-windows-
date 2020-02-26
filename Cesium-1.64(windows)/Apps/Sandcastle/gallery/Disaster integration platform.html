@@ -135,6 +135,7 @@ function startup(Cesium) {
 
     //維冠大樓
     function addtileset1(){
+        viewer.entities.removeAll();
         var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
         url: '../Source/SampleData/Models/Scene/Production_6(Cesium).json',
         }));
@@ -162,17 +163,15 @@ function startup(Cesium) {
         }
         });
         //Create a red pin representing a hospital from the maki icon set.
-        var rescure = Cesium.when(pinBuilder.fromMakiIconId('hospital', Cesium.Color.GREEN, 48), function(canvas) {
-            return viewer.entities.add({
+        var rescure = viewer.entities.add({
             name : '待救生還者',
             description:'<table border="1"><tr><td>待救人數</td><td>20</td></tr></table>',
             position : Cesium.Cartesian3.fromDegrees(120.2612004,23.0051932,40),
             billboard : {
-                image : canvas.toDataURL(),
+                image : pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL(),
                 verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
                 scale : 1.5
             }
-        });
         });
         var remotecontrol = viewer.entities.add({
             name : 'gpiotest',
@@ -190,6 +189,7 @@ function startup(Cesium) {
     }   
     //花蓮雲翠大樓
     function addtileset2(){
+        viewer.entities.removeAll();
         var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
         url: '../Source/SampleData/Models/Hualien1/Production_2(Cesium).json',
         }));
@@ -209,46 +209,69 @@ function startup(Cesium) {
         viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(0.0, -0.3, 0.0));
     }    
     
+
+    // CAUTION: Only disable iframe sandbox if the descriptions come from a trusted source.
+    viewer.infoBox.frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-forms allow-scripts allow-top-navigation');
+    
+    var entity ;
     //安南活動中心
     function add_gym(){
         createModel('../Source/SampleData/Models/test1/scene.gltf',120.208000,23.032460,0,0,1.5,0,0.5 );
         
-        var planPin = viewer.entities.add(
+        var planpin = viewer.entities.add(
         {
+            id :"360picture",
             name:"活動中心全景圖",
             description: '<iframe src="https://www.360cities.net/embed_iframe/panorama_tmp-8049" width="500" height="400" frameborder="0" bgcolor="#000000" target="_blank" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><br/><a title="Panorama photos of 安西里活動中心 on 360cities.net" href="https://www.360cities.net/image/panorama_tmp-8049">安西里活動中心</a>',
             position : Cesium.Cartesian3.fromDegrees(120.20800,23.032478,10),
             billboard : 
             {
                 image : pinBuilder.fromColor(Cesium.Color.ROYALBLUE, 48).toDataURL(),
-                verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+                verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
             }
+            
          });
          
-        var planPin2 = viewer.entities.add(
+        var planpin2 =viewer.entities.add(
         {
+            id :"streaming",
             name:"活動中心直播影片",
             description:'<iframe width="500" height="400" src="https://www.youtube.com/embed/Bs1ZcKhnxSo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
             position: Cesium.Cartesian3.fromDegrees(120.20800,23.032500,10),
             billboard:
             {
-                image : pinBuilder.fromColor(Cesium.Color.LIME, 48).toDataURL(),
-                verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+                image : pinBuilder.fromColor(Cesium.Color.GREEN, 48).toDataURL(),
+                verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
             }          
         });
+        
+                 
         viewer.camera.flyTo({
             destination : Cesium.Cartesian3.fromDegrees(120.208000,23.032460,100)
         });
     }
-    
-    //日本建築(test)
-    function add_japanbuilding(){
-        createModel('../Source/SampleData/Models/shanghai_city_scene/scene.gltf',120.261150,23.006000,0,0,0,0,0.1 );  
-        viewer.camera.flyTo({
-            destination : Cesium.Cartesian3.fromDegrees(120.261150,23.006000,200)
-        });
-    }
 
+        //add event listener which change the billboard.color when click the button
+    
+
+         // Since the viewer is newly constructed, the iframe is still about:blank.
+        // This listens for the iframe to change to the Cesium description template,
+        // which only happens once at startup.
+        //
+viewer.selectedEntityChanged.addEventListener(function(entity) {
+            document.addEventListener('keydown', keyDownHandler, false);
+            function keyDownHandler(event){
+                if(event.keyCode == 20) {  
+                    entity.billboard.image = pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL();
+                    document.removeEventListener('keydown', keyDownHandler, false);
+                }else if(event.keyCode==17){             
+                    entity.billboard.image = pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL();
+                    document.removeEventListener('keydown', keyDownHandler, false);
+                }
+
+            }    
+        });
+    //adjust the building height
     var viewModel = {
     height: 0
     };
@@ -340,6 +363,9 @@ function startup(Cesium) {
         // we get the correct point when mousing over terrain.
         var earthPosition = viewer.scene.pickPosition(event.position);
         // `earthPosition` will be undefined if our mouse is not over the globe.
+            if(!drawingMode){
+                return;
+        }
         if (Cesium.defined(earthPosition)) {
             if (activeShapePoints.length === 0) {
                 floatingPoint = createPoint(earthPosition);
@@ -381,10 +407,109 @@ function startup(Cesium) {
         terminateShape();
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+function CustomLine() {    
+    this.positions=[];
+    this.markers=[];
+
+    var that=this;
+
+    this.line=viewer.entities.add({
+        polyline : {
+            // This callback updates positions each frame.
+            positions : new Cesium.CallbackProperty(function(time, result) {
+                return that.positions;
+            }, false),
+            width : 3,
+            clampToGround:true,
+            material : Cesium.Color.YELLOW
+        }
+    });
+}
+
+
+CustomLine.prototype.addPoint=function (position) {
+    var that=this;
+    var n=this.positions.length;
+    this.positions[n]=position;
+    var pinBuilder = new Cesium.PinBuilder();
+
+    var marker=viewer.entities.add({
+        position : new Cesium.CallbackProperty(function(time, result) {
+            return that.positions[n];
+        }, false),
+        billboard : {
+            image : pinBuilder.fromText(n+1, Cesium.Color.RED, 48).toDataURL(),
+            heightReference:Cesium.HeightReference.CLAMP_TO_GROUND,
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+        }
+    });
+
+    this.markers.push(marker);
+};
+CustomLine.prototype.removeAll=function () {
+    for(var i=0;i<this.markers.length;i++){
+        viewer.entities.remove(this.markers[i]);
+    }
+
+    this.markers=[];
+    this.positions=[];
+};
+
+var customLine=new CustomLine();
+var drawing=false;
+
+var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+handler.setInputAction(function(event) {
+    if(!drawing){
+        return;
+    }
+    var mousePosition = viewer.scene.pickPosition(event.position);
+    if (Cesium.defined(mousePosition)) {
+        customLine.addPoint(mousePosition);
+    }
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+handler.setInputAction(function(event) {    
+        if(!drawing){
+            return;
+        }
+    var mousePosition = viewer.scene.pickPosition(event.endPosition);
+    if (Cesium.defined(mousePosition)) {        
+        var n=customLine.positions.length;
+        if(n===0){
+            customLine.addPoint(mousePosition);
+        }else {
+            customLine.positions[n-1]=mousePosition;
+        }
+    }
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+handler.setInputAction(function(event) {
+    if(!drawing){
+        return;
+    }
+
+    drawing=false;    
+}, Cesium.ScreenSpaceEventType.RIGHT_CLICK );
+
+
 //////////////////////////////////////////
 //roslaunch cartographer
 //////////////////////////////////////////
-
+    /*
     var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
             handler.setInputAction(function (movement) {
@@ -408,7 +533,7 @@ function startup(Cesium) {
                 }
 
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
+*/
 
 //////////////////////////////////////
 //hosipital information
@@ -476,25 +601,19 @@ function startup(Cesium) {
         onselect : function() {
             add_gym();
             Sandcastle.highlight(add_gym);
-        }},
-        {
-        text : 'Japanbuilding',
-        onselect : function() {
-            add_japanbuilding();
-            Sandcastle.highlight(add_japanbuilding);
-        }},
+            }
+        },
         {
         text : '花蓮雲翠大樓',
         onselect : function() {
             addtileset2();
-            Sandcastle.highlight(add_japanbuilding);
-        }},
+            }
+        },
         {
         text : '維冠大樓',
         onselect : function() {
-            addtileset1();
-            Sandcastle.highlight(add_japanbuilding);
-        }}
+            addtileset1();            }
+        }
     ]);
 
     Sandcastle.addToolbarMenu([
@@ -559,8 +678,10 @@ function startup(Cesium) {
     {
     text : '標記工具',
         onselect : function(){
-        terminateShape();
+         drawingMode = false;
+         viewer.entities.removeAll();
 
+        
         }
 },
     {
@@ -585,9 +706,21 @@ function startup(Cesium) {
         terminateShape();
         drawingMode = 'polygon(green)';
     }},
+    {
+    text : 'StartDraw',
+    onselect : function() {
+         drawing=true;
+         customLine.removeAll();
+    }},      
+    {
+    text : 'StopDraw',
+    onselect : function() {
+         drawing=false;
+         customLine.removeAll();
+    }}
     ];
 
-    Sandcastle.addToolbarMenu(options);
+Sandcastle.addToolbarMenu(options);
 //Sandcastle_End
     Sandcastle.finishedLoading();
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Use Viewer to start building new applications or easily embed Cesium into existing applications.">
+    <meta name="cesium-sandcastle-labels" content="Beginner, Showcases">
+    <title>Cesium Demo</title>
+    <script type="text/javascript" src="../Sandcastle-header.js"></script>
+    <script type="text/javascript" src="../CesiumUnminified/Cesium.js" ></script>
+
+</head>
+<body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+<style>
+    @import url(../templates/bucket.css);
+</style>
+<div id="cesiumContainer" class="fullSize"></div>
+<div id="loadingOverlay"><h1>Loading...</h1></div>
+<div id="toolbar"></div>
+<script id="cesium_sandcastle_script">
+function startup(Cesium) {
+    'use strict';
+//Sandcastle_Begin
+
+var viewer = new Cesium.Viewer('cesiumContainer');
+var toolbar = document.getElementById('toolbar');
+var numClicks = 0;
+
+// CAUTION: Only disable iframe sandbox if the descriptions come from a trusted source.
+viewer.infoBox.frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-forms allow-scripts allow-top-navigation');
+
+function updateDisplay() {
+    toolbar.innerHTML = 'Number of times you clicked either button: ' + numClicks;
+}
+updateDisplay();
+
+var entity = viewer.entities.add({
+    position : Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
+    billboard :{
+        image : '../images/Cesium_Logo_overlay.png'
+    },
+    name : 'Click tester in Exton, PA',
+    description :
+        'This an entity description with a clickable button in it.' +
+        '<div style="text-align:center; padding:15px"><button class="click-test-button">' +
+        'Click here</button></div>'
+});
+viewer.selectedEntity = entity;
+
+viewer.entities.add({
+    position : Cesium.Cartesian3.fromDegrees(-117.13, 32.81),
+    billboard :{
+        image : '../images/Cesium_Logo_overlay.png',
+        color : Cesium.Color.GREEN
+    },
+    name : 'Click tester in San Diego, CA',
+    description :
+        '<div style="text-align:center; padding:10px"><button class="click-test-button">' +
+        'Also click here</button></div>' +
+        'This is another place you can click.'
+});
+
+// Since the viewer is newly constructed, the iframe is still about:blank.
+// This listens for the iframe to change to the Cesium description template,
+// which only happens once at startup.
+//
+viewer.infoBox.frame.addEventListener('load', function() {
+    //
+    // Now that the description is loaded, register a click listener inside
+    // the document of the iframe.
+    //
+    viewer.infoBox.frame.contentDocument.body.addEventListener('click', function(e) {
+        //
+        // The document body will be rewritten when the selectedEntity changes,
+        // but this body listener will survive.  Now it must determine if it was
+        // one of the clickable buttons.
+        //
+        if (e.target && e.target.className === 'click-test-button') {
+            ++numClicks;
+            entity.billboard.color = Cesium.Color.RED;
+            updateDisplay();
+        }
+    }, false);
+}, false);//Sandcastle_End
+    Sandcastle.finishedLoading();
+}
+if (typeof Cesium !== 'undefined') {
+    window.startupCalled = true;
+    startup(Cesium);
+}
+</script>
+</body>
+</html>
