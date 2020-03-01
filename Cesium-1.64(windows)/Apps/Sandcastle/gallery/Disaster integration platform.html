@@ -262,13 +262,20 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
             document.addEventListener('keydown', keyDownHandler, false);
             function keyDownHandler(event){
                 if(event.keyCode == 20) {  
-                    entity.billboard.image = pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL();
-                    document.removeEventListener('keydown', keyDownHandler, false);
+                    try{
+                        entity.billboard.image = pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL();
+                        document.removeEventListener('keydown', keyDownHandler, false);
+                    }catch(exception){
+                        console.log('error');
+                    }   
                 }else if(event.keyCode==17){             
-                    entity.billboard.image = pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL();
-                    document.removeEventListener('keydown', keyDownHandler, false);
+                    try{
+                        entity.billboard.image = pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL();
+                        document.removeEventListener('keydown', keyDownHandler, false);
+                    }catch(exception){
+                        console.log('error');
+                    }
                 }
-
             }    
         });
     //adjust the building height
@@ -676,7 +683,7 @@ handler.setInputAction(function(event) {
 
     var options = [
     {
-    text : '標記工具',
+    text : 'Marking Tool',
         onselect : function(){
          drawingMode = false;
          viewer.entities.removeAll();
