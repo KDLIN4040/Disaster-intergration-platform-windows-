@@ -117,8 +117,8 @@ function startup(Cesium) {
            billboard:
            {
                color : color,
-               image:'../Source/Images/hospital/yellostar.png',
-               scale : 0.2,
+               image:'../Source/ICON/PNG/HOSPITAL-COLOR.png',
+               scale : 0.1,
                verticalOrigin : Cesium.VerticalOrigin.BOTTOM
 
            }
@@ -147,9 +147,9 @@ function startup(Cesium) {
                 position : Cesium.Cartesian3.fromDegrees(120.2613004,23.0051432,40),
                 billboard : 
                 {
-                    image : pinBuilder.fromColor(Cesium.Color.ROYALBLUE, 48).toDataURL(),
+                    image : '../Source/ICON/PNG/ROBOTIC.png',
                     verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-                    scale : 1.5
+                    scale : 0.1
                 }
              });
         var questionPin = viewer.entities.add({
@@ -458,9 +458,10 @@ CustomLine.prototype.addPoint=function (position) {
             return that.positions[n];
         }, false),
         billboard : {
-            image : pinBuilder.fromText(n+1, Cesium.Color.RED, 48).toDataURL(),
+            image : '../Source/ICON/PNG/TENT-COLOR.png',
             heightReference:Cesium.HeightReference.CLAMP_TO_GROUND,
-            verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+            scale : 0.1
         }
     });
 
