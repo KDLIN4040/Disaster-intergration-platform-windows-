@@ -264,16 +264,20 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
                 if(event.keyCode == 20) {  
                     try{
                         entity.billboard.image = pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL();
+                        entity.billboard.scale = 1.5;
                         document.removeEventListener('keydown', keyDownHandler, false);
                     }catch(exception){
                         console.log('error');
+                        document.removeEventListener('keydown', keyDownHandler, false);
                     }   
                 }else if(event.keyCode==17){             
                     try{
                         entity.billboard.image = pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL();
+                        entity.billboard.scale = 1.5;
                         document.removeEventListener('keydown', keyDownHandler, false);
                     }catch(exception){
                         console.log('error');
+                        document.removeEventListener('keydown', keyDownHandler, false);
                     }
                 }
             }    
@@ -416,17 +420,6 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 function CustomLine() {    
     this.positions=[];
     this.markers=[];
@@ -447,71 +440,70 @@ function CustomLine() {
 }
 
 
-CustomLine.prototype.addPoint=function (position) {
-    var that=this;
-    var n=this.positions.length;
-    this.positions[n]=position;
-    var pinBuilder = new Cesium.PinBuilder();
+    CustomLine.prototype.addPoint=function (position) {
+        var that=this;
+        var n=this.positions.length;
+        this.positions[n]=position;
+        var pinBuilder = new Cesium.PinBuilder();
 
-    var marker=viewer.entities.add({
-        position : new Cesium.CallbackProperty(function(time, result) {
-            return that.positions[n];
-        }, false),
-        billboard : {
-            image : '../Source/ICON/PNG/TENT-COLOR.png',
-            heightReference:Cesium.HeightReference.CLAMP_TO_GROUND,
-            verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-            scale : 0.1
+        var marker=viewer.entities.add({
+            position : new Cesium.CallbackProperty(function(time, result) {
+                return that.positions[n];
+            }, false),
+            billboard : {
+                image : pinBuilder.fromText(n+1, Cesium.Color.RED, 48).toDataURL(),
+                heightReference:Cesium.HeightReference.CLAMP_TO_GROUND,
+                //verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+            }
+        });
+
+        this.markers.push(marker);
+    };
+    CustomLine.prototype.removeAll=function () {
+        for(var i=0;i<this.markers.length;i++){
+            viewer.entities.remove(this.markers[i]);
         }
-    });
 
-    this.markers.push(marker);
-};
-CustomLine.prototype.removeAll=function () {
-    for(var i=0;i<this.markers.length;i++){
-        viewer.entities.remove(this.markers[i]);
-    }
+        this.markers=[];
+        this.positions=[];
+    };
 
-    this.markers=[];
-    this.positions=[];
-};
+    var customLine=new CustomLine();
+    var drawing=false;
 
-var customLine=new CustomLine();
-var drawing=false;
-
-var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
-handler.setInputAction(function(event) {
-    if(!drawing){
-        return;
-    }
-    var mousePosition = viewer.scene.pickPosition(event.position);
-    if (Cesium.defined(mousePosition)) {
-        customLine.addPoint(mousePosition);
-    }
-}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-handler.setInputAction(function(event) {    
+    var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+    handler.setInputAction(function(event) {
         if(!drawing){
             return;
         }
-    var mousePosition = viewer.scene.pickPosition(event.endPosition);
-    if (Cesium.defined(mousePosition)) {        
-        var n=customLine.positions.length;
-        if(n===0){
+        var mousePosition = viewer.scene.pickPosition(event.position);
+        if (Cesium.defined(mousePosition)) {
             customLine.addPoint(mousePosition);
-        }else {
-            customLine.positions[n-1]=mousePosition;
         }
-    }
-}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-handler.setInputAction(function(event) {
-    if(!drawing){
-        return;
-    }
+    handler.setInputAction(function(event) {    
+            if(!drawing){
+                return;
+            }
+        var mousePosition = viewer.scene.pickPosition(event.endPosition);
+        if (Cesium.defined(mousePosition)) {        
+            var n=customLine.positions.length;
+            if(n===0){
+                customLine.addPoint(mousePosition);
+            }else {
+                customLine.positions[n-1]=mousePosition;
+            }
+        }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    drawing=false;    
-}, Cesium.ScreenSpaceEventType.RIGHT_CLICK );
+    handler.setInputAction(function(event) {
+        if(!drawing){
+            return;
+        }
+
+        drawing=false;    
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK );
 
 
 //////////////////////////////////////////
