@@ -17,7 +17,7 @@
 
     <style>
     @import url(../templates/bucket.css);
-            #toolbar {
+    #toolbar {
         background: rgba(42, 42, 42, 0.8);
         padding: 4px;
         border-radius: 4px;
@@ -26,6 +26,10 @@
         vertical-align: middle;
         padding-top: 2px;
         padding-bottom: 2px;
+    }
+    .cesium-infoBox {
+        width: 60%;
+        max-width: none;
     }
 </style>
 <div id="cesiumContainer" class="fullSize"></div>
@@ -175,13 +179,14 @@ function startup(Cesium) {
         });
         var remotecontrol = viewer.entities.add({
             name : 'gpiotest',
-            description:'<iframe  width="600px" height="600px" src="http://192.168.11.48:81">',
+            description:'<iframe  width="1440px" height="900px" src="http://localhost:5000">',
             position : Cesium.Cartesian3.fromDegrees(120.2611004,23.0052432,50),
             billboard : {
                 image : pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL(),
                 verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
                 scale : 1.5
             }
+           
         });
     
             
