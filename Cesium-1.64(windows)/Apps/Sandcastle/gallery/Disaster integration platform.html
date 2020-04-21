@@ -50,9 +50,12 @@ function startup(Cesium) {
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZTdlNGQxNy03MjJjLTQ2ZjItYjc3MC0zZmMzOWRkZTZkNDYiLCJpZCI6MzczMSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTUzODY1MjA0OH0.cy2FnkM4c7dUFQJrrAtKOQtJyFuN1UrLMiBAwUjbs0k';
     Cesium.BingMapsApi.defaultAccessTokenKey ='AtnrXO-GaWfQWtvkf7fq4WHB0bQ7ncFVvLmVS5oAytmnTEVfFnzzTulmkjpqFV3N';
 
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+    selectionIndicator : false,
+});
+
     viewer.scene.globe.enableLighting = false;
-    viewer.scene.globe.depthTestAgainstTerrain = true;
+    
 
    
     // set the initial position in taiwan
@@ -589,6 +592,93 @@ function CustomLine() {
 
 
 
+/////////////////////////////////////////////////////////
+//position
+/////////////////////////////////////////////////////////
+function ShowCartographic(){
+    var entity = viewer.entities.add({
+        label : {
+            show : false,
+            showBackground : true,
+            font : '14px monospace',
+            horizontalOrigin : Cesium.HorizontalOrigin.LEFT,
+            verticalOrigin : Cesium.VerticalOrigin.TOP,
+            pixelOffset : new Cesium.Cartesian2(15, 0)
+        }
+    });
+
+    // Mouse over the globe to see the cartographic position
+    handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction(function(movement) {
+        var cartesian = viewer.camera.pickEllipsoid(movement.endPosition, viewer.scene.globe.ellipsoid);
+        if (cartesian) {
+            var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+            var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+            var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+
+            entity.position = cartesian;
+            entity.label.show = true;
+            entity.label.text =
+                'Lon: ' + ('   ' + longitudeString).slice(-7) + '\u00B0' +
+                '\nLat: ' + ('   ' + latitudeString).slice(-7) + '\u00B0';
+        } else {
+            entity.label.show = false;
+        }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+};
+
+function PickPosition(){
+    
+     var labelEntity = viewer.entities.add({
+        label : {
+            show : false,
+            showBackground : true,
+            font : '20px monospace',
+            horizontalOrigin : Cesium.HorizontalOrigin.LEFT,
+            verticalOrigin : Cesium.VerticalOrigin.TOP,
+            pixelOffset : new Cesium.Cartesian2(15, 0)
+        }
+    });
+
+    // Mouse over the globe to see the cartographic position
+    handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction(function(movement) {
+
+        var foundPosition = false;
+
+        var scene = viewer.scene;
+        if (scene.mode !== Cesium.SceneMode.MORPHING) {
+            var pickedObject = viewer.scene.pick(movement.endPosition);
+            if (scene.pickPositionSupported && Cesium.defined(pickedObject)){
+                var cartesian = viewer.scene.pickPosition(movement.endPosition);
+
+                if (Cesium.defined(cartesian)) {
+                    var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
+                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+                    var heightString = cartographic.height.toFixed(2);
+
+                    labelEntity.position = cartesian;
+                    labelEntity.label.show = true;
+                    labelEntity.label.text =
+                        'Lon: ' + ('   ' + longitudeString).slice(-7) + '\u00B0' +
+                        '\nLat: ' + ('   ' + latitudeString).slice(-7) + '\u00B0' +
+                        '\nAlt: ' + ('   ' + heightString).slice(-7) + 'm';
+
+                    labelEntity.label.eyeOffset = new Cesium.Cartesian3(0.0, 0.0, -cartographic.height * (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0));
+
+                    foundPosition = true;
+                }
+            }
+        }
+
+        if (!foundPosition) {
+            labelEntity.label.show = false;
+        }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+};
+
+
 
 ////////////////////////////////////////////
 //tool bar manu
@@ -679,10 +769,11 @@ function CustomLine() {
     ]);
 
 
-    var options = [
+    var markingTool = [
     {
     text : 'Marking Tool',
         onselect : function(){
+         viewer.scene.globe.depthTestAgainstTerrain = true;   
          drawingMode = false;
          viewer.entities.removeAll();
 
@@ -724,8 +815,36 @@ function CustomLine() {
          customLine.removeAll();
     }}
     ];
+Sandcastle.addToolbarMenu(markingTool);
 
-Sandcastle.addToolbarMenu(options);
+var position = [
+    {
+        text:'position',
+        onselect : function(){
+         drawingMode = false;
+         viewer.entities.removeAll();
+
+        
+        }
+    },
+    {
+        text:'Show Cartographic',
+        onselect: function(){
+            viewer.scene.globe.depthTestAgainstTerrain = false;
+            ShowCartographic();
+        }},
+    {
+        text:'PickPosition',
+        onselect: function(){
+            PickPosition();
+    }
+    }
+        ];
+        
+Sandcastle.addToolbarMenu(position);
+
+            
+
 //Sandcastle_End
     Sandcastle.finishedLoading();
 }
