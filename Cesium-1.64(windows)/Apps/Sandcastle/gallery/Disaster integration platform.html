@@ -42,11 +42,7 @@
 function startup(Cesium) {
     'use strict';
 //Sandcastle_Begin
-//////////////////////////////////////////////
-//initial the cesium platform
-//////////////////////////////////////////////
-    
-    // set the cesium token and map token
+  // set the cesium token and map token
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZTdlNGQxNy03MjJjLTQ2ZjItYjc3MC0zZmMzOWRkZTZkNDYiLCJpZCI6MzczMSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTUzODY1MjA0OH0.cy2FnkM4c7dUFQJrrAtKOQtJyFuN1UrLMiBAwUjbs0k';
     Cesium.BingMapsApi.defaultAccessTokenKey ='AtnrXO-GaWfQWtvkf7fq4WHB0bQ7ncFVvLmVS5oAytmnTEVfFnzzTulmkjpqFV3N';
 
@@ -519,11 +515,8 @@ function CustomLine() {
 //////////////////////////////////////////
     /*
     var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-
             handler.setInputAction(function (movement) {
-
                 var pick = viewer.scene.pick(movement.position);
-
                 if (Cesium.defined(pick) && (pick.id.id === 'id')) {
                          $.ajax({ 
                url: 'http://localhost:8082/ajax',
@@ -539,7 +532,6 @@ function CustomLine() {
             })
                     
                 }
-
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 */
 
@@ -843,7 +835,6 @@ var position = [
         
 Sandcastle.addToolbarMenu(position);
 
-            
 
 //Sandcastle_End
     Sandcastle.finishedLoading();
