@@ -318,7 +318,52 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
                 }
             }    
         });
-   
+    
+
+function addtileset3() {
+
+	// Bounding sphere
+	var boundingSphere = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(120.217197, 22.99776662, 84.86832984), 800.0);
+
+	// Override behavior of home button
+	viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(commandInfo) {
+		// Fly to custom position
+		viewer.camera.flyToBoundingSphere(boundingSphere);
+
+	// Tell the home button not to do anything
+	commandInfo.cancel = true;
+	});
+	// Set custom initial position
+	viewer.camera.flyToBoundingSphere(boundingSphere, {duration: 0});
+
+	// Add tileset. Do not forget to reduce the default screen space error to 1
+	var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+	url: '../Source/SampleData/Models/NCKU_20181201/Production_2(Cesium).json',
+	//maximumScreenSpaceError : isMobile.any() ? 8 : 1, // Temporary workaround for low memory mobile devices - Increase maximum error to 8.
+	//maximumNumberOfLoadedTiles : isMobile.any() ? 10 : 1000 // Temporary workaround for low memory mobile devices - Decrease (disable) tile cache.
+	}));
+
+	tileset.readyPromise.then(function(tileset) {
+    var height = -20.0; // Set this to anything
+    var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+    var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+    var offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height);
+    var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+    tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+	});
+
+	/*
+	var pinGeo = viewer.entities.add({
+	name : 'Geomatics Department',
+	position : Cesium.Cartesian3.fromDegrees(120.2198306, 22.9986472),
+	billboard : {
+		image : pin.fromText('Geomatics', Cesium.Color.BLACK, 70).toDataURL(),
+		height : 10,
+		verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+		}
+	});*/
+
+    }
 
 
 
@@ -699,7 +744,13 @@ function PickPosition(){
         text : '維冠大樓',
         onselect : function() {
             addtileset1();            }
+        },
+        {text: 'NCKU',
+        onselect : function(){
+            addtileset3();
         }
+        }
+        
     ]);
 
     Sandcastle.addToolbarMenu([
