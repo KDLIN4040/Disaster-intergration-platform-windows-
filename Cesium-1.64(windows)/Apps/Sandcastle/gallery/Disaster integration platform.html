@@ -51,7 +51,8 @@ function startup(Cesium) {
 });
 
     viewer.scene.globe.enableLighting = false;
-    
+    viewer.scene.globe.depthTestAgainstTerrain = true;   
+
 
    
     // set the initial position in taiwan
@@ -323,16 +324,18 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
 function addtileset3() {
 
 	// Bounding sphere
-	var boundingSphere = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(120.217197, 22.99776662, 84.86832984), 800.0);
+	var boundingSphere = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(120.221197, 22.99556662, 84.86832984), 25.0);
 
 	// Override behavior of home button
-	viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(commandInfo) {
+	/*viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(commandInfo) {
 		// Fly to custom position
 		viewer.camera.flyToBoundingSphere(boundingSphere);
 
 	// Tell the home button not to do anything
-	commandInfo.cancel = true;
+	//commandInfo.cancel = true;
 	});
+    */
+    viewer.camera.flyToBoundingSphere(boundingSphere);
 	// Set custom initial position
 	viewer.camera.flyToBoundingSphere(boundingSphere, {duration: 0});
 
@@ -872,7 +875,7 @@ var position = [
     {
         text:'Show Cartographic',
         onselect: function(){
-            viewer.scene.globe.depthTestAgainstTerrain = false;
+            //viewer.scene.globe.depthTestAgainstTerrain = false;
             ShowCartographic();
         }},
     {
