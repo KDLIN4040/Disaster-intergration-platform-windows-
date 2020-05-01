@@ -45,16 +45,19 @@ function startup(Cesium) {
 // set the cesium token and map token
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZTdlNGQxNy03MjJjLTQ2ZjItYjc3MC0zZmMzOWRkZTZkNDYiLCJpZCI6MzczMSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTUzODY1MjA0OH0.cy2FnkM4c7dUFQJrrAtKOQtJyFuN1UrLMiBAwUjbs0k';
     Cesium.BingMapsApi.defaultAccessTokenKey ='AtnrXO-GaWfQWtvkf7fq4WHB0bQ7ncFVvLmVS5oAytmnTEVfFnzzTulmkjpqFV3N';
-
+    
     var viewer = new Cesium.Viewer('cesiumContainer', {
     selectionIndicator : false,
 });
 
     viewer.scene.globe.enableLighting = false;
     viewer.scene.globe.depthTestAgainstTerrain = true;   
+    var iframe = document.getElementsByClassName('cesium-infoBox-iframe')[0];
+    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms'); 
+    var pinBuilder = new Cesium.PinBuilder();
 
-
-   
+    
+     
     // set the initial position in taiwan
     var initialPosition = new Cesium.Cartesian3.fromDegrees(120.26115, 23.006,  1000000);
     var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(0, -90, 0);
@@ -88,6 +91,10 @@ function startup(Cesium) {
 ////////////////////////////////////////////////
 //3d models in map
 ////////////////////////////////////////////////     
+
+  //add building information
+
+
 
     // create model function     
     function createModel(url,degrees1,degrees2,height,heading,pitching,roll,scale) {
@@ -129,12 +136,7 @@ function startup(Cesium) {
       });
     }
 
-    //add building information
-
-    var iframe = document.getElementsByClassName('cesium-infoBox-iframe')[0];
-    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms'); 
-    var pinBuilder = new Cesium.PinBuilder();
-
+  
 
 
     //維冠大樓
@@ -326,15 +328,8 @@ function addtileset3() {
 	// Bounding sphere
 	var boundingSphere = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(120.221197, 22.99556662, 84.86832984), 25.0);
 
-	// Override behavior of home button
-	/*viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(commandInfo) {
-		// Fly to custom position
-		viewer.camera.flyToBoundingSphere(boundingSphere);
 
-	// Tell the home button not to do anything
-	//commandInfo.cancel = true;
-	});
-    */
+
     viewer.camera.flyToBoundingSphere(boundingSphere);
 	// Set custom initial position
 	viewer.camera.flyToBoundingSphere(boundingSphere, {duration: 0});
@@ -342,8 +337,6 @@ function addtileset3() {
 	// Add tileset. Do not forget to reduce the default screen space error to 1
 	var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
 	url: '../Source/SampleData/Models/NCKU_20181201/Production_2(Cesium).json',
-	//maximumScreenSpaceError : isMobile.any() ? 8 : 1, // Temporary workaround for low memory mobile devices - Increase maximum error to 8.
-	//maximumNumberOfLoadedTiles : isMobile.any() ? 10 : 1000 // Temporary workaround for low memory mobile devices - Decrease (disable) tile cache.
 	}));
 
 	tileset.readyPromise.then(function(tileset) {
@@ -354,17 +347,20 @@ function addtileset3() {
     var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
     tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
 	});
+    
+    
+    var robotic = viewer.entities.add({
+            name : 'interface',
+            description:'<iframe  width="1440px" height="900px" src="http://localhost:5000">',
+            position : Cesium.Cartesian3.fromDegrees(120.22139,22.99661,20),
+            billboard : {
+                image : pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL(),
+                verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+                scale : 1.5
+            }
+           
+        });
 
-	/*
-	var pinGeo = viewer.entities.add({
-	name : 'Geomatics Department',
-	position : Cesium.Cartesian3.fromDegrees(120.2198306, 22.9986472),
-	billboard : {
-		image : pin.fromText('Geomatics', Cesium.Color.BLACK, 70).toDataURL(),
-		height : 10,
-		verticalOrigin : Cesium.VerticalOrigin.BOTTOM
-		}
-	});*/
 
     }
 
@@ -693,15 +689,15 @@ function PickPosition(){
 
                 if (Cesium.defined(cartesian)) {
                     var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(2);
-                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(2);
+                    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(5);
+                    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(5);
                     var heightString = cartographic.height.toFixed(2);
 
                     labelEntity.position = cartesian;
                     labelEntity.label.show = true;
                     labelEntity.label.text =
-                        'Lon: ' + ('   ' + longitudeString).slice(-7) + '\u00B0' +
-                        '\nLat: ' + ('   ' + latitudeString).slice(-7) + '\u00B0' +
+                        'Lon: ' + ('   ' + longitudeString) + '\u00B0' +
+                        '\nLat: ' + ('   ' + latitudeString)+ '\u00B0' +
                         '\nAlt: ' + ('   ' + heightString).slice(-7) + 'm';
 
                     labelEntity.label.eyeOffset = new Cesium.Cartesian3(0.0, 0.0, -cartographic.height * (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0));
