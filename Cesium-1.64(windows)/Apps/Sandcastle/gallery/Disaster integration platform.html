@@ -28,7 +28,7 @@
         padding-bottom: 2px;
     }
     .cesium-infoBox {
-        width: 60%;
+        width: 80%;
         max-width: none;
     }
 </style>
@@ -351,6 +351,7 @@ function addtileset3() {
     
     var robotic = viewer.entities.add({
             name : 'interface',
+            //description:'<iframe  width="400px" height="400px" src="../Source/SampleData/slam1.jpg">',
             description:'<iframe  width="1440px" height="900px" src="http://localhost:5000">',
             position : Cesium.Cartesian3.fromDegrees(120.22139,22.99661,20),
             billboard : {
@@ -390,8 +391,8 @@ function addtileset3() {
                 polyline : {
                     positions : positionData,
                     clampToGround : true,
-                    material: new Cesium.ColorMaterialProperty(Cesium.Color.GREEN.withAlpha(0.3)),
-                    width : 50
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.YELLOW),
+                    width : 20
                 }
             });
         }
@@ -399,14 +400,14 @@ function addtileset3() {
             shape = viewer.entities.add({
                 polygon: {
                     hierarchy: positionData,
-                    material: new Cesium.ColorMaterialProperty(Cesium.Color.RED.withAlpha(0.3))
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.RED)
                 }
             });}
         else if (drawingMode === 'polygon(green)') {
             shape = viewer.entities.add({
                 polygon: {
                     hierarchy: positionData,
-                    material: new Cesium.ColorMaterialProperty(Cesium.Color.GREEN.withAlpha(0.3))
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.GREEN)
                 }
             });
         }
