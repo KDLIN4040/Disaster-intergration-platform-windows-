@@ -304,6 +304,8 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
                     try{
                         entity.billboard.image = pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL();
                         entity.billboard.scale = 1.5;
+                        entity.description = '<iframe  width="1440px" height="900px" src="http://localhost:5000">';
+                        entity.name = "Interface";
                         document.removeEventListener('keydown', keyDownHandler, false);
                     }catch(exception){
                         console.log('error');
@@ -313,6 +315,8 @@ viewer.selectedEntityChanged.addEventListener(function(entity) {
                     try{
                         entity.billboard.image = pinBuilder.fromText('+', Cesium.Color.GREEN, 48).toDataURL();
                         entity.billboard.scale = 1.5;
+                        entity.description = '<iframe  width="1000px" height="1000px" src="../Source/SampleData/map.png">';
+                        entity.name = "Map";
                         document.removeEventListener('keydown', keyDownHandler, false);
                     }catch(exception){
                         console.log('error');
@@ -351,7 +355,7 @@ function addtileset3() {
     
     var robotic = viewer.entities.add({
             name : 'interface',
-            //description:'<iframe  width="400px" height="400px" src="../Source/SampleData/slam1.jpg">',
+            //description:'<iframe  width="1000px" height="1000px" src="../Source/SampleData/slam1.jpg">',
             description:'<iframe  width="1440px" height="900px" src="http://localhost:5000">',
             position : Cesium.Cartesian3.fromDegrees(120.22139,22.99661,20),
             billboard : {
