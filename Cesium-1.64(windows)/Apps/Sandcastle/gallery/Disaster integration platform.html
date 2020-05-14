@@ -28,7 +28,7 @@
         padding-bottom: 2px;
     }
     .cesium-infoBox {
-        width: 80%;
+        width: 50%;
         max-width: none;
     }
 </style>
@@ -255,14 +255,14 @@ function startup(Cesium) {
     var entity ;
     //安南活動中心
     function add_gym(){
-        createModel('../Source/SampleData/Models/test1/scene.gltf',120.208000,23.032460,0,0,1.5,0,0.5 );
+        createModel('../Source/SampleData/Models/test1/scene.gltf',120.208000,23.032460,5,0,1.5,0,0.5 );
         
         var planpin = viewer.entities.add(
         {
             id :"360picture",
             name:"活動中心全景圖",
-            description: '<iframe src="https://www.360cities.net/embed_iframe/panorama_tmp-8049" width="500" height="400" frameborder="0" bgcolor="#000000" target="_blank" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><br/><a title="Panorama photos of 安西里活動中心 on 360cities.net" href="https://www.360cities.net/image/panorama_tmp-8049">安西里活動中心</a>',
-            position : Cesium.Cartesian3.fromDegrees(120.20800,23.032478,10),
+            description: '<iframe src="https://www.360cities.net/embed_iframe/panorama_tmp-8049" width="1000" height="1000" frameborder="0" bgcolor="#000000" target="_blank" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><br/><a title="Panorama photos of 安西里活動中心 on 360cities.net" href="https://www.360cities.net/image/panorama_tmp-8049">安西里活動中心</a>',
+            position : Cesium.Cartesian3.fromDegrees(120.20800,23.032478,15),
             billboard : 
             {
                 image : pinBuilder.fromColor(Cesium.Color.ROYALBLUE, 48).toDataURL(),
@@ -275,8 +275,8 @@ function startup(Cesium) {
         {
             id :"streaming",
             name:"活動中心直播影片",
-            description:'<iframe width="500" height="400" src="https://www.youtube.com/embed/Bs1ZcKhnxSo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-            position: Cesium.Cartesian3.fromDegrees(120.20800,23.032500,10),
+            description:'<iframe width="1000" height="1000" src="https://www.youtube.com/embed/Bs1ZcKhnxSo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            position: Cesium.Cartesian3.fromDegrees(120.20800,23.032500,15),
             billboard:
             {
                 image : pinBuilder.fromColor(Cesium.Color.GREEN, 48).toDataURL(),
@@ -404,14 +404,14 @@ function addtileset3() {
             shape = viewer.entities.add({
                 polygon: {
                     hierarchy: positionData,
-                    material: new Cesium.ColorMaterialProperty(Cesium.Color.RED)
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.RED.withAlpha(0.3))
                 }
             });}
         else if (drawingMode === 'polygon(green)') {
             shape = viewer.entities.add({
                 polygon: {
                     hierarchy: positionData,
-                    material: new Cesium.ColorMaterialProperty(Cesium.Color.GREEN)
+                    material: new Cesium.ColorMaterialProperty(Cesium.Color.GREEN.withAlpha(0.3))
                 }
             });
         }
@@ -640,7 +640,7 @@ function ShowCartographic(){
         label : {
             show : false,
             showBackground : true,
-            font : '14px monospace',
+            font : '20px monospace',
             horizontalOrigin : Cesium.HorizontalOrigin.LEFT,
             verticalOrigin : Cesium.VerticalOrigin.TOP,
             pixelOffset : new Cesium.Cartesian2(15, 0)
