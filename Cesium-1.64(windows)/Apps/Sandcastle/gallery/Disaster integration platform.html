@@ -290,6 +290,49 @@ function startup(Cesium) {
         });
     }
 
+
+
+
+
+
+    //災難測試場景
+    function add_disasterscene(){
+        var latitude = 23.10833;
+        var longitude = 120.155;
+        createModel('../Source/SampleData/Models/disaster1.glb',longitude,latitude,3,0,1.5,0,0.5 );
+        
+        var robotic = viewer.entities.add({
+                name : 'interface',
+                //description:'<iframe  width="1000px" height="1000px" src="../Source/SampleData/slam1.jpg">',
+                description:'<iframe  width="1440px" height="900px" src="http://localhost:5000">',
+                position : Cesium.Cartesian3.fromDegrees(120.15505,23.10829,4),
+                billboard : {
+                    image : pinBuilder.fromText('?', Cesium.Color.BLACK, 48).toDataURL(),
+                    verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+                    scale : 1.5
+                }
+
+            });
+        var index=1 ,bool = false;
+            robotic.imageClock=setInterval(function () {
+                if(robotic!=null){
+                    index+=1;
+                    robotic.billboard.show = bool ;
+                    bool = true;
+                    if(index>3){
+                        index=1;
+                        bool = false;
+                    }
+                   
+                    
+                } 
+            }, 300);
+
+        viewer.camera.flyTo({
+            destination : Cesium.Cartesian3.fromDegrees(longitude,latitude,100)
+        });
+    }
+
         //add event listener which change the billboard.color when click the button
     
 
@@ -753,6 +796,12 @@ function PickPosition(){
         onselect : function(){
             addtileset3();
         }
+        },
+        {
+            text:'disaster scene',
+            onselect: function(){
+                add_disasterscene();
+            }
         }
         
     ]);
