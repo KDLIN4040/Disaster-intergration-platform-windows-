@@ -28,7 +28,7 @@
         padding-bottom: 2px;
     }
     .cesium-infoBox {
-        width: 50%;
+        width: 80%;
         max-width: none;
     }
 </style>
@@ -673,7 +673,91 @@ function CustomLine() {
     hp1position[24] = new Cesium.Cartesian3.fromDegrees(120.309777,22.647373,0);
     hp1position[25] = new Cesium.Cartesian3.fromDegrees(121.592515,23.995097,0);
 
-
+    const hp1insurance_bed = [
+1622,
+230,
+1262,
+1972,
+418,
+455,
+134,
+389,
+763,
+663,
+407,
+94,
+2312,
+1000,
+178,
+612,
+1212,
+779,
+181,
+913,
+645,
+645,
+895,
+1381,
+952,
+476,
+];
+        
+    const hp1bed = [
+2117,
+255,
+1676,
+2608,
+653,
+757,
+186,
+647,
+1139,
+868,
+631,
+145,
+3123,
+1359,
+216,
+1003,
+1709,
+1071,
+199,
+1193,
+1073,
+1073,
+1319,
+1883,
+1481,
+669,
+];
+    const hp1insurance_bed_ration = [
+76.62,
+90.20,
+75.30,
+75.61,
+64.01,
+60.11,
+72.04,
+60.12,
+66.99,
+76.38,
+64.50,
+64.83,
+74.03,
+73.58,
+82.41,
+61.02,
+70.92,
+72.74,
+90.95,
+76.53,
+60.11,
+60.11,
+67.85,
+73.34,
+64.28,
+71.15,
+];
 
 /////////////////////////////////////////////////////////
 //position
@@ -856,8 +940,8 @@ function PickPosition(){
             text : 'hospital',
             onselect : function(){
                            for(var i=0; i<26; i++){
-                               createHospital(hp1name[i], hp1position[i], parseInt(Math.random()*1000), parseInt(Math.random()*1000), parseInt(Math.random()*100));
-    
+                               createHospital(hp1name[i], hp1position[i], hp1insurance_bed[i], hp1bed[i], hp1insurance_bed_ration[i]);
+    //parseInt(Math.random()*1000)
                            }
                        }
         }
